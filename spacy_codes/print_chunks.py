@@ -35,10 +35,10 @@ class spacy_chunks():
     def _read_data(self):
         for count,file_ in enumerate(self.data_files):
             print "reading "+file_
+            if count < 0 or count > 5:
+                continue
             R = file_.split("/")[-1].replace("-claims.p","")
             self.claims[R] = cPickle.load( open(file_, "r") )
-            if count == 20:
-                break
 
     def _clean_cnk(self, txt):
         txt = txt.replace("&lt;sub&gt;","",-1)
@@ -49,7 +49,6 @@ class spacy_chunks():
             words[i][0] = words[i][0].replace("&lt;sub&gt;","",-1)
             words[i][0] = words[i][0].replace("&lt;/sub&gt;","",-1)
             words[i][0] = words[i][0].replace("&lt;/sub&gt","",-1)
-
         return words
 
     def _print_chunks(self):
@@ -62,8 +61,8 @@ class spacy_chunks():
                     if "ed " in cnk[0]:
                         cnk[0] = self._clean_cnk(cnk[0])
                         if cnk[0] not in self.unique_chunks:
-                            if "CO2" not in cnk[0]:
-                                continue
+                            # if "bleed" not in cnk[0]:
+                            #     continue
                             print cnk[0]
                             s,e = cnk[1], cnk[2]
                             noun = []
@@ -73,8 +72,8 @@ class spacy_chunks():
                             words = self._clean_words(words)
 
                             for j in range(len(words)):
-
-                                if "ed" == words[j][0][-2:] and words[j][2] != "NOUN":
+                                ## bleed air
+                                if "ed" == words[j][0][-2:] and "eed" != words[j][0][-3:] and words[j][2] != "NOUN":
                                     # Ni-based
                                     if "HYPH" == words[j-1][3]:
                                         ww = words[j-2][0] + words[j-1][0] + words[j][0]

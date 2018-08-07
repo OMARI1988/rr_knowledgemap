@@ -1,2 +1,4 @@
 spacy
 networkx
+pattern
+wikipedia
