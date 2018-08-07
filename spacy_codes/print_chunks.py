@@ -37,8 +37,20 @@ class spacy_chunks():
             print "reading "+file_
             R = file_.split("/")[-1].replace("-claims.p","")
             self.claims[R] = cPickle.load( open(file_, "r") )
-            # if count == 20:
-            #     break
+            if count == 20:
+                break
+
+    def _clean_cnk(self, txt):
+        txt = txt.replace("&lt;sub&gt;","",-1)
+        return txt
+
+    def _clean_words(self, words):
+        for i in range(len(words)):
+            words[i][0] = words[i][0].replace("&lt;sub&gt;","",-1)
+            words[i][0] = words[i][0].replace("&lt;/sub&gt;","",-1)
+            words[i][0] = words[i][0].replace("&lt;/sub&gt","",-1)
+
+        return words
 
     def _print_chunks(self):
         self.unique_chunks = []
@@ -46,14 +58,11 @@ class spacy_chunks():
         bad_starting_words = ["and", "or"]
         for R in self.claims:
             for counter in self.claims[R]:
-                # print self.claims[R][counter]["txt"]
-                # if "Ni-based" not in self.claims[R][counter]["txt"]:
-                #     continue
-
                 for cnk in self.claims[R][counter]["spacy_chunks"]:
                     if "ed " in cnk[0]:
+                        cnk[0] = self._clean_cnk(cnk[0])
                         if cnk[0] not in self.unique_chunks:
-                            if "CO&lt;sub&gt;2 &lt;/sub&gt;" not in cnk[0]:
+                            if "CO2" not in cnk[0]:
                                 continue
                             print cnk[0]
                             s,e = cnk[1], cnk[2]
@@ -61,6 +70,7 @@ class spacy_chunks():
                             properties = []
 
                             words = self.claims[R][counter]["spacy_data"][s:e]
+                            words = self._clean_words(words)
 
                             for j in range(len(words)):
 
