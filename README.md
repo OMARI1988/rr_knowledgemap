@@ -12,3 +12,10 @@ Please make sure you have a good internet connection. This can take a few minute
 sudo pip install -U -r requirements.txt
 sudo python -m spacy download en
 ```
+
+## Extracting relations from patent claims
+To extract simple relations from patent claims (e.g. air --> can be --> cooled) use the following:
+```
+python spacy_codes/learning_relations_patents.py
+```
+This code will extract noun phrases from claims using spacy and then learn some relations.
