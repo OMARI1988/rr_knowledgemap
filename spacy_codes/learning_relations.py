@@ -26,7 +26,7 @@ class spacy_chunks():
         self.project = "2018-08-06-11:45:28-(gas turbine)"
         if os.path.isdir("/media/"+self.user+"/Data4"):
             self.data_dir = "/media/"+self.user+"/Data4/ROSA/analysis/"+self.project+"/"
-            self.save_dir = "/home/"+self.user+"/Data4/ROSA/db/"
+            self.save_dir = "/media/"+self.user+"/Data4/ROSA/db/"
         elif os.path.isdir("/home/"+self.user+"/Data4"):
             self.data_dir = "/home/"+self.user+"/Data4/ROSA/analysis/2018-08-06-11_45_28-(gas turbine)/"
             self.save_dir = "/home/"+self.user+"/Data4/ROSA/db/"
@@ -64,6 +64,9 @@ class spacy_chunks():
         return words
 
     def _process_chunks(self):
+        if not os.path.isdir(self.save_dir):
+            os.mkdir(self.save_dir)
+
         self.F_ed = open(self.save_dir+"raw_ed.txt","w")
         self.unique_chunks = []
         self.unique_codes = {}
