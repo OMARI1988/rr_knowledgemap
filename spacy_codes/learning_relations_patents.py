@@ -23,7 +23,7 @@ class bcolors:
 
 class spacy_process():
     """docstring for spacy_chunks."""
-    def __init__(self):
+    def __init__(self, argv):
         logger = logging.getLogger("program")
         logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s')
         logging.root.setLevel(level=logging.INFO)
@@ -43,14 +43,28 @@ class spacy_process():
             self.save_dir = "/home/"+self.user+"/Data4/ROSA/db/"
         self.logger.info("extract relations system ready..")
 
-        self.spacy._process_all()
-        self.relation_ed._process_all()
+        if "s" in argv:
+            self.spacy._process_all()
+        if "r" in argv:
+            self.relation_ed._process_all()
 
 
 
 
-def main():
-    S = spacy_process()
+def main(argv):
+    if argv == []:
+        print "please choose if you want to process spacy or extract relations"
+        print "python learning_relations_patents s (for spacy only)"
+        print "python learning_relations_patents r (for relations extraction only)"
+        print "python learning_relations_patents s r (for both)"
+        sys.exit(1)
+    else:
+        for a in argv:
+            if a not in ["s","r"]:
+                print "please enter correct arguments"
+                sys.exit(1)
+
+    S = spacy_process(argv)
 
 if __name__=="__main__":
-    main()
+    main(sys.argv[1:])
