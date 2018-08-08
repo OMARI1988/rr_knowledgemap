@@ -40,6 +40,7 @@ class extract_spacy():
         self.process = process
         self.logger = logger
         self.user = getpass.getuser()
+        self.p = Pool(20)
 
         # loading the spacy model
         self.nlp = spacy.load('en')
@@ -201,7 +202,6 @@ class extract_spacy():
 
 
     def _spacy_multi(self):
-        p = Pool(50)
         # for R in sorted(self.claims):
         self.logger.info("  -- processing the spacy claims "+self.date+"..")
         for ri in range(0,len(self.claims),1000):
@@ -214,7 +214,7 @@ class extract_spacy():
                 data.append([ counter, txt ])
                 self.claims_range[counter] = self.claims[counter].copy()
 
-            results = p.map(_Spacy_multicore, data)
+            results = self.p.map(_Spacy_multicore, data)
 
             for data in results:
                 counter, spacy_data, spacy_chunks = data
