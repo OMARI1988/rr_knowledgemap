@@ -41,6 +41,7 @@ class ROSA():
         self.folders = sorted([x[0] for x in os.walk(self.data_dir)])
         for folder in self.folders:
             for file_ in glob.glob(folder+"/*.txt"):
+                print "processing "+file_
                 F = open(file_, "r")
                 for line in F:
                     line = line.split("\n")[0]
@@ -56,7 +57,7 @@ class ROSA():
 
 
 
-                break
+                # break
             # break
 
     def _query(self, txt):
