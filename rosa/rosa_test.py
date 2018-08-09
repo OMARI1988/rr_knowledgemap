@@ -29,15 +29,19 @@ class ROSA():
             self.data_dir = "/media/"+self.user+"/Data4/ROSA/db/"
         else:
             self.data_dir = "/home/"+self.user+"/Data4/ROSA/db/"
+            self.save_dir = "/home/"+self.user+"/Data4/ROSA/graph/"
 
-        self._convert_raw_data_to_graph()
+        # self._convert_raw_data_to_graph()
+        self._load_graph()
 
         self.logger.info("ROSA is now live..")
 
-        # self._query()
         while(1):
             text = raw_input("ROSA says: What do you want to know about? ")  # Python 2
             self._query(text)
+
+    def _load_graph(self):
+        self.G = nx.read_gpickle(self.save_dir+"knowledge_graph.p")
 
     def _convert_raw_data_to_graph(self):
         self.G = nx.DiGraph()
@@ -56,6 +60,9 @@ class ROSA():
                         self.G[lem_source][lem_dist]['weight'] += 1
                     else:
                         self.G.add_edge(lem_source, lem_dist, weight=1)
+        if not os.path.isdir(self.save_dir):
+            os.mkdir(self.save_dir)
+        nx.write_gpickle(self.G, self.save_dir+"knowledge_graph.p")
 
 
 

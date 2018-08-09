@@ -8,6 +8,7 @@ import spacy
 import numpy as np
 import string
 from lib.preprocessing import extract_spacy
+from lib.preprocessing import print_spacy
 from lib.relations import relation_ed
 
 
@@ -30,8 +31,9 @@ class spacy_process():
         logger.info("running %s", ' '.join(sys.argv))
         self.logger = logger
 
-        self.spacy = extract_spacy.extract_spacy(logger)
-        self.relation_ed = relation_ed.relation_ed(logger)
+        # self.spacy = extract_spacy.extract_spacy(logger)
+        self.spacy_printing = print_spacy.print_spacy(logger)
+        # self.relation_ed = relation_ed.relation_ed(logger)
 
         self.user = getpass.getuser()
         self.project = "2018-08-06-11:45:28-(gas turbine)"
@@ -46,7 +48,10 @@ class spacy_process():
         if "s" in argv:
             self.spacy._process_all()
         if "r" in argv:
-            self.relation_ed._process_all()
+            self.relation_ing._process_all()
+            # self.relation_ed._process_all()
+        if "p" in argv:
+            self.spacy_printing._print_all()
 
 
 
@@ -56,11 +61,12 @@ def main(argv):
         print "please choose if you want to process spacy or extract relations"
         print "python learning_relations_patents s (for spacy only)"
         print "python learning_relations_patents r (for relations extraction only)"
+        print "python learning_relations_patents p (for printing spacy chunks)"
         print "python learning_relations_patents s r (for both)"
         sys.exit(1)
     else:
         for a in argv:
-            if a not in ["s","r"]:
+            if a not in ["s","r","p"]:
                 print "please enter correct arguments"
                 sys.exit(1)
 
