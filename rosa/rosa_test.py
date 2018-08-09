@@ -25,7 +25,10 @@ class ROSA():
         self.logger = logger
         self.lemmatizer = Lemmatizer(LEMMA_INDEX, LEMMA_EXC, LEMMA_RULES)
         self.user = getpass.getuser()
-        self.data_dir = "/media/"+self.user+"/Data4/ROSA/db/"
+        if os.path.isdir("/media/"+self.user+"/Data4/ROSA/db/"):
+            self.data_dir = "/media/"+self.user+"/Data4/ROSA/db/"
+        else:
+            self.data_dir = "/home/"+self.user+"/Data4/ROSA/db/"
 
         self._convert_raw_data_to_graph()
 
