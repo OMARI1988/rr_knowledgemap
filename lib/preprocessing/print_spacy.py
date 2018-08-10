@@ -25,8 +25,8 @@ class print_spacy():
         self.save_dir_ = "/home/"+self.user+"/Data4/ROSA/analysis/2018-08-06-11_45_28-(gas turbine)/"
         file_ = self.save_dir_+"0-499-claims.p"
 
-        self.claims = cPickle.load( open(file_,"r") )
 
     def _print_all(self):
+        self.claims = cPickle.load( open(file_,"r") )
         for cnk in self.claims[0]["spacy_chunks"]:
             print cnk[0]

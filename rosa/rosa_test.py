@@ -17,7 +17,8 @@ class bcolors:
 
 class ROSA():
     """docstring for ROSA."""
-    def __init__(self):
+    def __init__(self, process):
+        self.process = process
         logger = logging.getLogger("program")
         logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s')
         logging.root.setLevel(level=logging.INFO)
@@ -27,11 +28,14 @@ class ROSA():
         self.user = getpass.getuser()
         if os.path.isdir("/media/"+self.user+"/Data4/ROSA/db/"):
             self.data_dir = "/media/"+self.user+"/Data4/ROSA/db/"
+            self.save_dir = "/media/"+self.user+"/Data4/ROSA/graph/"
         else:
             self.data_dir = "/home/"+self.user+"/Data4/ROSA/db/"
             self.save_dir = "/home/"+self.user+"/Data4/ROSA/graph/"
 
-        # self._convert_raw_data_to_graph()
+        if self.process == "update":
+            self._convert_raw_data_to_graph()
+        # elif self.process == "run":
         self._load_graph()
 
         self.logger.info("ROSA is now live..")
@@ -41,6 +45,7 @@ class ROSA():
             self._query(text)
 
     def _load_graph(self):
+        self.logger.info("loading ROSA graph...")
         self.G = nx.read_gpickle(self.save_dir+"knowledge_graph.p")
 
     def _convert_raw_data_to_graph(self):
@@ -62,6 +67,7 @@ class ROSA():
                         self.G.add_edge(lem_source, lem_dist, weight=1)
         if not os.path.isdir(self.save_dir):
             os.mkdir(self.save_dir)
+        self.logger.info("saving ROSA graph...")
         nx.write_gpickle(self.G, self.save_dir+"knowledge_graph.p")
 
 
@@ -126,8 +132,19 @@ class ROSA():
         return " "+self.lemmatizer(txt, "NOUN")[0]+" "
 
 
-def main():
-    R = ROSA()
+def main(argv):
+    process = ""
+    if "update" in argv[0]:
+        process = "update"
+    if "run" in argv[0]:
+        process = "run"
+    if process == "":
+        print "please chose one of the following"
+        print "python rosa/rosa_test.py run # to run and load the graph model"
+        print "python rosa/rosa_test.py update # to update the graph model with new relations then run"
+        sys.exit(1)
+
+    R = ROSA(process)
 
 if __name__=="__main__":
-    main()
+    main(sys.argv[1:])
