@@ -9,7 +9,7 @@ import numpy as np
 import string
 from lib.preprocessing import extract_spacy
 from lib.preprocessing import print_spacy
-from lib.relations import relation_ed
+from lib.relations import relation_ed, relation_adj
 
 
 class bcolors:
@@ -34,6 +34,7 @@ class spacy_process():
         self.spacy = extract_spacy.extract_spacy(logger)
         self.spacy_printing = print_spacy.print_spacy(logger)
         self.relation_ed = relation_ed.relation_ed(logger)
+        self.relation_adj = relation_adj.relation_adj(logger)
 
         # self.user = getpass.getuser()
         # self.project = "2018-08-06-11:45:28-(gas turbine)"
@@ -49,6 +50,7 @@ class spacy_process():
             self.spacy._process_all()
         if "r" in argv:
             self.relation_ed._process_all()
+            # self.relation_adj._process_all()
             # self.relation_ing._process_all()
         if "p" in argv:
             self.spacy_printing._print_all()

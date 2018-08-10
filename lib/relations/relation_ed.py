@@ -37,6 +37,10 @@ class relation_ed():
     def _process_all(self):
         if not os.path.isdir(self.save_dir):
             os.mkdir(self.save_dir)
+        self.save_dir += "ed/"
+        if not os.path.isdir(self.save_dir):
+            os.mkdir(self.save_dir)
+
         self.folders = sorted([x[0] for x in os.walk(self.data_dir)])
 
         for folder in self.folders:
@@ -54,12 +58,15 @@ class relation_ed():
                 self._process_chunks()
 
     def _process_chunks(self):
-        self.F_ed = open(self.save_dir+self.name+"/"+self.file_name,"w")
+        self.F_ed = open(self.save_dir+self.name+"/"+self.file_name+".processing","w")
         self.unique_chunks = []
         self.unique_codes = {}
         self.bad_starting_words = ["and", "or"]
         for counter in self.claims:
             self._1_ed_relations(counter)
+        src = self.save_dir+self.name+"/"+self.file_name+".processing"
+        dst = self.save_dir+self.name+"/"+self.file_name
+        os.rename(src, dst)
 
     def _clean_cnk(self, txt):
         txt = txt.replace("&lt;sub&gt;","",-1)
