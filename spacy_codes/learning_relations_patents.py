@@ -31,25 +31,25 @@ class spacy_process():
         logger.info("running %s", ' '.join(sys.argv))
         self.logger = logger
 
-        # self.spacy = extract_spacy.extract_spacy(logger)
+        self.spacy = extract_spacy.extract_spacy(logger)
         self.spacy_printing = print_spacy.print_spacy(logger)
-        # self.relation_ed = relation_ed.relation_ed(logger)
+        self.relation_ed = relation_ed.relation_ed(logger)
 
-        self.user = getpass.getuser()
-        self.project = "2018-08-06-11:45:28-(gas turbine)"
-        if os.path.isdir("/media/"+self.user+"/Data4"):
-            self.data_dir = "/media/"+self.user+"/Data4/ROSA/analysis/"+self.project+"/"
-            self.save_dir = "/media/"+self.user+"/Data4/ROSA/db/"
-        elif os.path.isdir("/home/"+self.user+"/Data4"):
-            self.data_dir = "/home/"+self.user+"/Data4/ROSA/analysis/2018-08-06-11_45_28-(gas turbine)/"
-            self.save_dir = "/home/"+self.user+"/Data4/ROSA/db/"
+        # self.user = getpass.getuser()
+        # self.project = "2018-08-06-11:45:28-(gas turbine)"
+        # if os.path.isdir("/media/"+self.user+"/Data4"):
+        #     self.data_dir = "/media/"+self.user+"/Data4/ROSA/analysis/"+self.project+"/"
+        #     self.save_dir = "/media/"+self.user+"/Data4/ROSA/db/"
+        # elif os.path.isdir("/home/"+self.user+"/Data4"):
+        #     self.data_dir = "/home/"+self.user+"/Data4/ROSA/analysis/2018-08-06-11_45_28-(gas turbine)/"
+        #     self.save_dir = "/home/"+self.user+"/Data4/ROSA/db/"
         self.logger.info("extract relations system ready..")
 
         if "s" in argv:
             self.spacy._process_all()
         if "r" in argv:
-            self.relation_ing._process_all()
-            # self.relation_ed._process_all()
+            self.relation_ed._process_all()
+            # self.relation_ing._process_all()
         if "p" in argv:
             self.spacy_printing._print_all()
 
