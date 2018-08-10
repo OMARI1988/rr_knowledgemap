@@ -78,50 +78,57 @@ class ROSA():
 
     def _query(self, txt):
         Q = self._clean(txt)
-        nodes = []
-        for node in self.G.nodes():
-            if Q in node:
-                nodes.append(node)
-        nodes = sorted(nodes, key=len)
-
-        edges = []
-
-        print "\n"
-        print "============================================================="
-        print "results for",txt
-        print "============================================================="
-
-        for edge in self.G.edges():
-            try:
-                if edge[0] == nodes[0]:
-                    edges.append((edge[0],edge[1], self.G[edge[0]][edge[1]]["weight"]))
-            except:
-                pass
-        for e in reversed(sorted(edges, key=lambda x: x[2])):
-            print bcolors.FAIL + e[0] + bcolors.ENDC, "-->", "can be", "-->",
-            print bcolors.OKBLUE + e[1] + bcolors.ENDC,
-            print "(" + bcolors.WARNING + str(e[2]) + bcolors.ENDC + ")"
-
-
-        edges = []
-
-        print "\n"
-        print "============================================================="
-        print "other results for",txt
-        print "============================================================="
-
-        for edge in self.G.edges():
-            try:
-                if edge[0] in nodes[1:]:
-                    edges.append((edge[0],edge[1], self.G[edge[0]][edge[1]]["weight"]))
-            except:
-                pass
-        for e in reversed(sorted(edges, key=lambda x: x[0])):
-            print bcolors.FAIL + e[0] + bcolors.ENDC, "-->", "can be", "-->",
-            print bcolors.OKBLUE + e[1] + bcolors.ENDC,
-            print "(" + bcolors.WARNING + str(e[2]) + bcolors.ENDC + ")"
-
-        print "\n"
+        if self.G.has_node(Q):
+             edges = self.G.edges(Q,data='weight')
+             edges = sorted(edges, key=lambda x: x[2])
+             for e in reversed(sorted(edges, key=lambda x: x[2])):
+                 print bcolors.FAIL + e[0] + bcolors.ENDC, "-->", "can be", "-->",
+                 print bcolors.OKBLUE + e[1] + bcolors.ENDC,
+                 print "(" + bcolors.WARNING + str(e[2]) + bcolors.ENDC + ")"
+        # nodes = []
+        # for node in self.G.nodes():
+        #     if Q in node:
+        #         nodes.append(node)
+        # nodes = sorted(nodes, key=len)
+        #
+        # edges = []
+        #
+        # print "\n"
+        # print "============================================================="
+        # print "results for",txt
+        # print "============================================================="
+        #
+        # for edge in self.G.edges():
+        #     try:
+        #         if edge[0] == nodes[0]:
+        #             edges.append((edge[0],edge[1], self.G[edge[0]][edge[1]]["weight"]))
+        #     except:
+        #         pass
+        # for e in reversed(sorted(edges, key=lambda x: x[2])):
+        #     print bcolors.FAIL + e[0] + bcolors.ENDC, "-->", "can be", "-->",
+        #     print bcolors.OKBLUE + e[1] + bcolors.ENDC,
+        #     print "(" + bcolors.WARNING + str(e[2]) + bcolors.ENDC + ")"
+        #
+        #
+        # edges = []
+        #
+        # print "\n"
+        # print "============================================================="
+        # print "other results for",txt
+        # print "============================================================="
+        #
+        # for edge in self.G.edges():
+        #     try:
+        #         if edge[0] in nodes[1:]:
+        #             edges.append((edge[0],edge[1], self.G[edge[0]][edge[1]]["weight"]))
+        #     except:
+        #         pass
+        # for e in reversed(sorted(edges, key=lambda x: x[0])):
+        #     print bcolors.FAIL + e[0] + bcolors.ENDC, "-->", "can be", "-->",
+        #     print bcolors.OKBLUE + e[1] + bcolors.ENDC,
+        #     print "(" + bcolors.WARNING + str(e[2]) + bcolors.ENDC + ")"
+        #
+        # print "\n"
 
     def _clean(self, txt):
         for i in "-_$%":
