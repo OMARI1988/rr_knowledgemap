@@ -145,7 +145,7 @@ class relation_ic():
                             phrases = [phrase]
 
                         for phrase in phrases:
-
+                            try:
                                 while phrase[0] in ",.-_ ":
                                     phrase = phrase[1:]
 
@@ -166,6 +166,8 @@ class relation_ic():
                                     print bcolors.WARNING + meta_data + bcolors.ENDC
 
                                     self.F_ic.write(phrase + " --> can be --> " + prop + " <--> " + meta_data + "\n")
+                            except:
+                                print ">>>>>>>>>>>>>>>>>>>>>>>>>> bad phrase"+phrase
                                         # print lemmatize(phrase+' can be '+prop)
                         print "----------------"
 

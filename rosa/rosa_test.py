@@ -56,15 +56,18 @@ class ROSA():
                 print "processing "+file_
                 F = open(file_, "r")
                 for line in F:
-                    line = line.split("\n")[0]
-                    data, meta = line.split(" <--> ")
-                    source, relation, dist =  data.split(" --> ")
-                    lem_source = self._clean(source)        # cleaned and lemmatized
-                    lem_dist = self._clean(dist)          # cleaned and lemmatized
-                    if self.G.has_edge(lem_source, lem_dist):
-                        self.G[lem_source][lem_dist]['weight'] += 1
-                    else:
-                        self.G.add_edge(lem_source, lem_dist, weight=1)
+                    try:
+                        line = line.split("\n")[0]
+                        data, meta = line.split(" <--> ")
+                        source, relation, dist =  data.split(" --> ")
+                        lem_source = self._clean(source)        # cleaned and lemmatized
+                        lem_dist = self._clean(dist)          # cleaned and lemmatized
+                        if self.G.has_edge(lem_source, lem_dist):
+                            self.G[lem_source][lem_dist]['weight'] += 1
+                        else:
+                            self.G.add_edge(lem_source, lem_dist, weight=1)
+                    except:
+                        print "Bad line"
         if not os.path.isdir(self.save_dir):
             os.mkdir(self.save_dir)
         self.logger.info("saving ROSA graph...")
