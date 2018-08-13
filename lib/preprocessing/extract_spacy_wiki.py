@@ -12,7 +12,8 @@ nlp = spacy.load('en')
 
 def _Spacy_multicore(data):
     global nlp
-    counter, txt = data
+    counter, num, txt = data
+    # print counter,num
     doc = nlp(txt.decode('utf8'))
     spacy_data = []
     spacy_chunks = []
@@ -23,7 +24,7 @@ def _Spacy_multicore(data):
     for chunk in doc.noun_chunks:
         spacy_chunks.append([chunk.text, chunk.start, chunk.end, chunk.root.text])
 
-    return [counter, spacy_data, spacy_chunks]
+    return [counter, num, spacy_data, spacy_chunks]
 
 class extract_spacy():
     """This class extract all paragraphs from wiki articles.
@@ -63,21 +64,25 @@ class extract_spacy():
     def _process_all(self):
         # creating the save dir for this search query
         x = datetime.datetime.now()
-        name = "all-wiki"
-        self.name = name.replace("/","",-1)
+        self.name = "all-wiki"
         if not os.path.isdir(self.save_dir_+self.name):
             os.mkdir(self.save_dir_+self.name)
 
+        # self.name += "/"+name.replace("/","",-1)
+
         for file_ in self.data:
 
-            self.f_name = file_.split("/")[-1]
+            self.f_name = file_.split("/")[-2]
             if not os.path.isdir(self.save_dir_+self.name+"/"+self.f_name):
                 os.mkdir(self.save_dir_+self.name+"/"+self.f_name)
+            self.f_name += "/"+file_.split("/")[-1]
+            # if not os.path.isdir(self.save_dir_+self.name+"/"+self.f_name):
+            #     os.mkdir(self.save_dir_+self.name+"/"+self.f_name)
 
             self.wiki_page = {}
 
             # makding sure to not reprocess all weeks again
-            if os.path.isfile(self.save_dir_+self.name+"/"+self.f_name+"/finished.meta"):
+            if os.path.isfile(self.save_dir_+self.name+"/"+self.f_name+".p"):
                 self.logger.info("I have processed "+self.f_name+" before..")
                 continue
 
@@ -111,11 +116,8 @@ class extract_spacy():
         return ''.join([i if ord(i) < 128 else '' for i in text])
 
     def _save_data(self):
-        self.logger.info("  -- saving "+self.date+"-"+self.range_+" claims data in pickle..")
-        if not os.path.isdir(self.save_dir_+self.name+"/"+self.date):
-            os.mkdir(self.save_dir_+self.name+"/"+self.date)
-        cPickle.dump(self.claims_range, open(self.save_dir_+self.name+"/"+self.date+"/"+self.range_+"-claims.p","w"))
-
+        self.logger.info("  -- saving "+self.f_name+" wiki data in pickle..")
+        cPickle.dump(self.wiki_page, open(self.save_dir_+self.name+"/"+self.f_name+".p","w"))
 
     def _spacy_data(self):
         self.logger.info("processing claims using SpaCy..")
@@ -129,36 +131,28 @@ class extract_spacy():
 
         self.logger.info("-finished processing claims using SpaCy..")
 
-
     def _spacy_multi(self):
-        # for R in sorted(self.claims):
         self.logger.info("  -- processing the spacy claims "+self.f_name+"..")
-        # for ri in range(0,len(self.wiki_page),1000):
-            # rs, rl = ri, min(ri+1000, len(self.claims))
-            # self.range_ = str(rs)+"-"+str(rl)
-            # data = []
-            # self.claims_range = {}
-            # for counter in range(rs,rl):
+
+        data = []
         for id_ in self.wiki_page:
-            print id_
             txt = self.wiki_page[id_]["text"]
-            print txt
-        #         data.append([ counter, txt ])
-        #         self.claims_range[counter] = self.claims[counter].copy()
-        #
-        #     results = self.p.map(_Spacy_multicore, data)
-        #
-        #     for data in results:
-        #         counter, spacy_data, spacy_chunks = data
-        #         # contains the pos, lemma and tag for every word in the claim
-        #         self.claims_range[counter]["spacy_data"] = spacy_data
-        #
-        #         # contains the phrases found in the claim
-        #         self.claims_range[counter]["spacy_chunks"] = spacy_chunks
-        #     self._save_data()
-        # self.logger.info("  -- finished processing the spacy claims "+self.date+"..")
-        # F = open(self.save_dir_+self.name+"/"+self.date+"/finished.meta","w")
-        # F.close()
+            self.wiki_page[id_]["spacy_data"] = {}
+            self.wiki_page[id_]["spacy_chunks"] = {}
+            for c,t in enumerate(txt):
+                data.append([ id_, c, t])
+
+        results = self.p.map(_Spacy_multicore, data)
+
+        for data in results:
+            id_, p_num, spacy_data, spacy_chunks = data
+            # contains the pos, lemma and tag for every word in the claim
+            self.wiki_page[id_]["spacy_data"][p_num] = spacy_data
+
+            # contains the phrases found in the claim
+            self.wiki_page[id_]["spacy_chunks"][p_num] = spacy_chunks
+        self._save_data()
+        # sys.exit(1)
 
     def _space_single(self):
         for R in sorted(self.claims):
