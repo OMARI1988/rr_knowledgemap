@@ -4,6 +4,7 @@ import getpass
 from spacy.lemmatizer import Lemmatizer
 from spacy.lang.en import LEMMA_INDEX, LEMMA_EXC, LEMMA_RULES
 import networkx as nx
+import cPickle
 
 class bcolors:
     HEADER = '\033[95m'
@@ -49,29 +50,48 @@ class ROSA():
         self.G = nx.read_gpickle(self.save_dir+"knowledge_graph.p")
 
     def _convert_raw_data_to_graph(self):
-        self.G = nx.DiGraph()
+        if os.path.isfile(self.save_dir+"learned_files.p"):
+            self.learned_files = cPickle.load( open(self.save_dir+"learned_files.p", "r") )
+            self.G = nx.read_gpickle(self.save_dir+"knowledge_graph.p")
+        else:
+            self.learned_files = []
+            self.G = nx.DiGraph()
+
         self.folders = sorted([x[0] for x in os.walk(self.data_dir)])
+        # counter = 0
         for folder in self.folders:
             for file_ in glob.glob(folder+"/*.txt"):
-                print "processing "+file_
-                F = open(file_, "r")
-                for line in F:
-                    try:
-                        line = line.split("\n")[0]
-                        data, meta = line.split(" <--> ")
-                        source, relation, dist =  data.split(" --> ")
-                        lem_source = self._clean(source)        # cleaned and lemmatized
-                        lem_dist = self._clean(dist)          # cleaned and lemmatized
-                        if self.G.has_edge(lem_source, lem_dist):
-                            self.G[lem_source][lem_dist]['weight'] += 1
-                        else:
-                            self.G.add_edge(lem_source, lem_dist, weight=1)
-                    except:
-                        print "Bad line"
+                file_flag = 1
+                if file_ not in self.learned_files:
+                    print "processing "+file_
+                    F = open(file_, "r")
+                    for line in F:
+                        try:
+                            line = line.split("\n")[0]
+                            data, meta = line.split(" <--> ")
+                            source, relation, dist =  data.split(" --> ")
+                            lem_source = self._clean(source)        # cleaned and lemmatized
+                            lem_dist = self._clean(dist)          # cleaned and lemmatized
+                            if self.G.has_edge(lem_source, lem_dist):
+                                self.G[lem_source][lem_dist]['weight'] += 1
+                            else:
+                                self.G.add_edge(lem_source, lem_dist, weight=1)
+                        except:
+                            file_flag = 0
+                            print "Bad line"
+                    if file_flag:
+                        self.learned_files.append(file_)
+                    # counter += 1
+            #     if counter >= 10000:
+            #         break
+            # if counter >= 10000:
+            #     break
+
         if not os.path.isdir(self.save_dir):
             os.mkdir(self.save_dir)
         self.logger.info("saving ROSA graph...")
         nx.write_gpickle(self.G, self.save_dir+"knowledge_graph.p")
+        cPickle.dump(self.learned_files, open(self.save_dir+"learned_files.p", "w"))
 
 
 
