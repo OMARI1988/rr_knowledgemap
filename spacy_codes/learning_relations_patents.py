@@ -7,7 +7,7 @@ import cPickle
 import spacy
 import numpy as np
 import string
-from lib.preprocessing import extract_spacy
+from lib.preprocessing import extract_spacy_patents
 from lib.preprocessing import print_spacy
 from lib.relations import relation_ed, relation_adj, relation_ic
 
@@ -31,7 +31,7 @@ class spacy_process():
         logger.info("running %s", ' '.join(sys.argv))
         self.logger = logger
 
-        self.spacy = extract_spacy.extract_spacy(logger)
+        self.spacy = extract_spacy_patents.extract_spacy(logger)
         self.spacy_printing = print_spacy.print_spacy(logger)
         self.relation_ed = relation_ed.relation_ed(logger)
         self.relation_adj = relation_adj.relation_adj(logger)
