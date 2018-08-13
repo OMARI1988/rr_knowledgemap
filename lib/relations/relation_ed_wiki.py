@@ -19,7 +19,7 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-class relation_ic():
+class relation_ed():
     """docstring for spacy_chunks."""
     def __init__(self, logger):
         self.logger = logger
@@ -33,12 +33,12 @@ class relation_ic():
             self.save_dir = "/home/"+self.user+"/Data4/ROSA/db/all-claims/"
         self.counter = 0
 
-        self.logger.info("learning ic relations ready..")
+        self.logger.info("learning ed relations ready..")
 
     def _process_all(self):
         if not os.path.isdir(self.save_dir):
             os.mkdir(self.save_dir)
-        self.save_dir += "ic/"
+        self.save_dir += "ed/"
         if not os.path.isdir(self.save_dir):
             os.mkdir(self.save_dir)
 
@@ -58,12 +58,12 @@ class relation_ic():
                 self._process_chunks()
 
     def _process_chunks(self):
-        self.F_ic = open(self.save_dir+self.name+"/"+self.file_name,"w")
+        self.F_ed = open(self.save_dir+self.name+"/"+self.file_name,"w")
         self.unique_chunks = []
         self.unique_codes = {}
         self.bad_starting_words = ["and", "or"]
         for id_ in self.wiki_page:
-            self._1_ic_relations(id_)
+            self._1_ed_relations(id_)
 
 
     def _clean_cnk(self, txt):
@@ -79,11 +79,11 @@ class relation_ic():
             words[i][0] = words[i][0].replace("  "," ",-1)
         return words
 
-    def _1_ic_relations(self, id_):
+    def _1_ed_relations(self, id_):
         for p_num in self.wiki_page[id_]["spacy_chunks"]:
             print id_,p_num
             for cnk in self.wiki_page[id_]["spacy_chunks"][p_num]:
-                if "ic " in cnk[0]:
+                if "ed " in cnk[0]:
                     # print cnk[0]
                     cnk[0] = self._clean_cnk(cnk[0])
                     if cnk[0] not in self.unique_chunks:
@@ -99,7 +99,7 @@ class relation_ic():
 
                         for j in range(len(words)):
                             ## bleed air
-                            if "ic" == words[j][0][-2:] and words[j][2] != "NOUN":
+                            if "ed" == words[j][0][-2:] and words[j][2] != "NOUN" and words[j][0] not in ["Mohammed","Ahmed","Mohamed","Mohammed"]:
                                 # Ni-based
                                 if "HYPH" == words[j-1][3]:
                                     ww = words[j-2][0] + words[j-1][0] + words[j][0]
@@ -167,7 +167,7 @@ class relation_ic():
                                         print bcolors.OKBLUE + prop + bcolors.ENDC, "<-->",
                                         print bcolors.WARNING + meta_data + bcolors.ENDC
 
-                                        self.F_ic.write(phrase + " --> can be --> " + prop + " <--> " + meta_data + "\n")
+                                        self.F_ed.write(phrase + " --> can be --> " + prop + " <--> " + meta_data + "\n")
                                 except:
                                     print ">>>>>>>>>>>>>>>>>>>>>>>>>> bad phrase"+phrase
                                             # print lemmatize(phrase+' can be '+prop)
