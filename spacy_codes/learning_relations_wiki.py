@@ -9,7 +9,8 @@ import numpy as np
 import string
 from lib.preprocessing import extract_spacy_wiki
 from lib.preprocessing import print_spacy
-from lib.relations import relation_ed, relation_adj, relation_ic
+from lib.relations import relation_ic_wiki
+#relation_ed, relation_adj
 
 
 class bcolors:
@@ -32,18 +33,18 @@ class learning_wiki():
         self.logger = logger
 
         self.spacy = extract_spacy_wiki.extract_spacy(logger)
+        self.relation_ic = relation_ic_wiki.relation_ic(logger)
         # self.spacy_printing = print_spacy.print_spacy(logger)
         # self.relation_ed = relation_ed.relation_ed(logger)
         # self.relation_adj = relation_adj.relation_adj(logger)
-        # self.relation_ic = relation_ic.relation_ic(logger)
 
 
         self.logger.info("extract relations system ready..")
 
         if "s" in argv:
             self.spacy._process_all()
-        # if "r" in argv:
-        #     self.relation_ic._process_all()
+        if "r" in argv:
+            self.relation_ic._process_all()
         #     self.relation_ed._process_all()
         #     # self.relation_adj._process_all()
         #     # self.relation_ing._process_all()

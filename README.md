@@ -50,6 +50,21 @@ and simply run
 ./WikiExtractor.py /location_to_the_unzipped_xml_dump -o /location_to_the_folder_where_you_want_the_extracted_text_files
 ```
 
+### Learning
+To extract simple relations from wiki artickles (e.g. air --> can be --> cooled) use the following:
+
+First) process claims with spacy (s)
+```
+python spacy_codes/learning_relations_wiki.py s
+```
+
+Second) extract relations (r)
+```
+python spacy_codes/learning_relations_wiki.py r
+```
+
+
+
 ## ROSA
 ROSA stands ROlls-ROyce Semantic Analysis tool.
 
