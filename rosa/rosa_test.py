@@ -18,8 +18,9 @@ class bcolors:
 
 class ROSA():
     """docstring for ROSA."""
-    def __init__(self, process):
+    def __init__(self, process, print_mode="single"):
         self.process = process
+        self.print_mode = print_mode
         logger = logging.getLogger("program")
         logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s')
         logging.root.setLevel(level=logging.INFO)
@@ -58,7 +59,7 @@ class ROSA():
             self.G = nx.DiGraph()
 
         self.folders = sorted([x[0] for x in os.walk(self.data_dir)])
-        # counter = 0
+        counter = 0
         for folder in self.folders:
             for file_ in glob.glob(folder+"/*.txt"):
                 file_flag = 1
@@ -81,11 +82,11 @@ class ROSA():
                             print "Bad line"
                     if file_flag:
                         self.learned_files.append(file_)
-                    # counter += 1
-            #     if counter >= 10000:
-            #         break
-            # if counter >= 10000:
-            #     break
+                    counter += 1
+                if counter >= 1000:
+                    break
+            if counter >= 1000:
+                break
 
         if not os.path.isdir(self.save_dir):
             os.mkdir(self.save_dir)
@@ -101,57 +102,25 @@ class ROSA():
 
     def _query(self, txt):
         Q = self._clean(txt)
+        counter = 0
         if self.G.has_node(Q):
              edges = self.G.edges(Q,data='weight')
              edges = sorted(edges, key=lambda x: x[2])
+
              for e in reversed(sorted(edges, key=lambda x: x[2])):
                  print bcolors.FAIL + e[0] + bcolors.ENDC, "-->", "can be", "-->",
                  print bcolors.OKBLUE + e[1] + bcolors.ENDC,
-                 print "(" + bcolors.WARNING + str(e[2]) + bcolors.ENDC + ")"
-        # nodes = []
-        # for node in self.G.nodes():
-        #     if Q in node:
-        #         nodes.append(node)
-        # nodes = sorted(nodes, key=len)
-        #
-        # edges = []
-        #
-        # print "\n"
-        # print "============================================================="
-        # print "results for",txt
-        # print "============================================================="
-        #
-        # for edge in self.G.edges():
-        #     try:
-        #         if edge[0] == nodes[0]:
-        #             edges.append((edge[0],edge[1], self.G[edge[0]][edge[1]]["weight"]))
-        #     except:
-        #         pass
-        # for e in reversed(sorted(edges, key=lambda x: x[2])):
-        #     print bcolors.FAIL + e[0] + bcolors.ENDC, "-->", "can be", "-->",
-        #     print bcolors.OKBLUE + e[1] + bcolors.ENDC,
-        #     print "(" + bcolors.WARNING + str(e[2]) + bcolors.ENDC + ")"
-        #
-        #
-        # edges = []
-        #
-        # print "\n"
-        # print "============================================================="
-        # print "other results for",txt
-        # print "============================================================="
-        #
-        # for edge in self.G.edges():
-        #     try:
-        #         if edge[0] in nodes[1:]:
-        #             edges.append((edge[0],edge[1], self.G[edge[0]][edge[1]]["weight"]))
-        #     except:
-        #         pass
-        # for e in reversed(sorted(edges, key=lambda x: x[0])):
-        #     print bcolors.FAIL + e[0] + bcolors.ENDC, "-->", "can be", "-->",
-        #     print bcolors.OKBLUE + e[1] + bcolors.ENDC,
-        #     print "(" + bcolors.WARNING + str(e[2]) + bcolors.ENDC + ")"
-        #
-        # print "\n"
+                 if self.print_mode=="single":
+                     print "(" + bcolors.WARNING + str(e[2]) + bcolors.ENDC + ")"#,
+                 if self.print_mode=="multi":
+                     print "(" + bcolors.WARNING + str(e[2]) + bcolors.ENDC + ")",
+                     counter += 1
+                     if counter == 3:
+                         counter = 0
+                         print
+                     else:
+                         print " "*(65 - len(str(e[0]) + "--> can be --> " + str(e[1]) + "()" + str(e[2]))),
+        print
 
     def _clean(self, txt):
         for i in "-_$%":
@@ -164,17 +133,25 @@ class ROSA():
 
 def main(argv):
     process = ""
-    if "update" in argv[0]:
-        process = "update"
-    if "run" in argv[0]:
-        process = "run"
+    print_mode = "single"
+    if len(argv)>0:
+        if "update" in argv[0]:
+            process = "update"
+        if "run" in argv[0]:
+            process = "run"
+    if len(argv)>1:
+        if "single" == argv[1]:
+            print_mode = "single"
+        if "multi" == argv[1]:
+            print_mode = "multi"
     if process == "":
         print "please chose one of the following"
         print "python rosa/rosa_test.py run # to run and load the graph model"
         print "python rosa/rosa_test.py update # to update the graph model with new relations then run"
+        print "python rosa/rosa_test.py run multi # to print three relations on each line"
         sys.exit(1)
 
-    R = ROSA(process)
+    R = ROSA(process, print_mode)
 
 if __name__=="__main__":
     main(sys.argv[1:])
